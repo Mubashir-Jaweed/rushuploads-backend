@@ -1,0 +1,146 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Tier {
+  FREE
+  PRO
+  PREMIUM
+}
+
+model User {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  email        String  @unique
+  password     String?
+  role         Role    @default(USER)
+  tier         Tier    @default(FREE)
+  totalStorage Int     @map("total_storage")
+  usedStorage  Int     @map("used_storage")
+  isVerified   Boolean @default(false) @map("is_verified")
+  isDeleted    Boolean @default(false) @map("is_deleted")
+
+  profileId String?  @map("profile_id") @db.ObjectId
+  profile   Profile?
+
+  otpId String? @map("otp_id") @db.ObjectId
+  otp   Otp?
+
+  files File[]
+  links Link[]
+
+  sharedFileIds String[] @map("shared_file_ids") @db.ObjectId
+  sharedFiles   File[]   @relation("Shared", fields: [sharedFileIds], references: [id])
+
+  accountId String? @map("account_id")
+
+  subscriptionId String?       @map("subscription_id") @db.ObjectId
+  subscription   Subscription?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+}
+
+model Profile {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  fullName String @map("full_name")
+
+  userId String @unique @map("user_id") @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+}
+
+enum OtpType {
+  VERIFY_EMAIL
+  RESET_PASSWORD
+}
+
+model Otp {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  code String
+  type OtpType @default(VERIFY_EMAIL)
+
+  userId String @unique @map("user_id") @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+}
+
+model File {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  originalName String  @map("original_name")
+  name         String
+  type         String
+  size         Int
+  downloads    Int     @default(0)
+  claims       Int     @default(0)
+  isExpired    Boolean @default(false) @map("is_expired")
+  isDeleted    Boolean @default(false) @map("is_deleted")
+
+  userId String @map("user_id") @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
+
+  linkId String? @map("link_ids") @db.ObjectId
+  link   Link?   @relation(fields: [linkId], references: [id])
+
+  sharedToUserIds String[] @map("shared_to_user_ids") @db.ObjectId
+  sharedToUsers   User[]   @relation("Shared", fields: [sharedToUserIds], references: [id])
+
+  expiredAt DateTime @map("expired_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+}
+
+model Link {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  to      String[] @default([]) @map("receiver_emails")
+  title   String?
+  message String?
+
+  userId String @map("user_id") @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
+
+  files File[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELED
+  PAST_DUE
+}
+
+model Subscription {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  subscriptionId   String             @unique @map("subscription_id")
+  customerId       String             @unique @map("customer_id")
+  priceId          String             @map("price_id")
+  status           SubscriptionStatus
+  currentPeriodEnd DateTime           @map("current_period_end")
+
+  userId String @unique @map("user_id") @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+}
