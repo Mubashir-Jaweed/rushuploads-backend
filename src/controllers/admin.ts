@@ -198,6 +198,81 @@ async function claimRewards(request: Request, response: Response) {
   }
 }
 
+
+async function getMonetizationSettings(_request: Request, response: Response) {
+  try {
+    const settings = await prisma.setting.findUnique({
+      where: { key: 'monetization' }
+    });
+
+    let responseData;
+    if (!settings) {
+      responseData = {
+        value: "OFF",
+        redirectUrl: "",
+        bannerUrl: ""
+      };
+    } else {
+      responseData = settings.value;
+    }
+
+    return response.success(
+      {
+        data: responseData
+      },
+      { message: "Monetization settings retrieved successfully" }
+    );
+  } catch (error) {
+    return handleErrors({ response, error });
+  }
+}
+
+async function updateMonetizationSettings(request: Request, response: Response) {
+  try {
+    const { value, redirectUrl, bannerUrl } = request.body;
+
+    if (value === undefined && redirectUrl === undefined && bannerUrl === undefined) {
+      return response.badRequest({}, { message: "No fields provided for update" });
+    }
+
+    if (value !== undefined && value !== "ON" && value !== "OFF") {
+      return response.badRequest({}, { message: "Invalid value. Allowed values: 'ON' or 'OFF'." });
+    }
+
+    const currentSettings = await prisma.setting.findUnique({
+      where: { key: 'monetization' }
+    });
+
+    let currentValue: { value: string; redirectUrl: string; bannerUrl: string; };
+    if (currentSettings) {
+      currentValue = currentSettings.value as typeof currentValue;
+    } else {
+      currentValue = { value: "OFF", redirectUrl: "", bannerUrl: "" };
+    }
+
+    const newValue = {
+      value: value ?? currentValue.value,
+      redirectUrl: redirectUrl ?? currentValue.redirectUrl,
+      bannerUrl: bannerUrl ?? currentValue.bannerUrl
+    };
+
+    const updatedSettings = await prisma.setting.upsert({
+      where: { key: 'monetization' },
+      create: { key: 'monetization', value: newValue },
+      update: { value: newValue }
+    });
+
+    return response.success(
+      {
+        data: updatedSettings.value
+      },
+      { message: "Monetization settings updated successfully" }
+    );
+  } catch (error) {
+    return handleErrors({ response, error });
+  }
+}
+
 export {
   getKPIs,
   getAllUsers,
@@ -205,4 +280,6 @@ export {
   deleteUser,
   deleteFile,
   claimRewards,
+  getMonetizationSettings,
+  updateMonetizationSettings,
 };
