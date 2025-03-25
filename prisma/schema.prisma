@@ -146,7 +146,7 @@ model Subscription {
 }
 
 model Setting {
-  id        String   @id @default(cuid()) @map("_id")
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   key       String   @unique
   value     Json
   createdAt DateTime @default(now())
