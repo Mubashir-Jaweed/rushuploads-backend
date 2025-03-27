@@ -13,6 +13,7 @@ import { profileRouter } from "./routers/profile";
 import { subscriptionRouter } from "./routers/subscription";
 import { supportRouter } from "./routers/support";
 import { userRouter } from "./routers/user";
+import { adsRouter } from "./routers/ads";
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use(
 );
 app.use(expandResponse);
 
+app.use("/ads", adsRouter);
 app.use("/admin", adminRouter);
 app.use("/auth", authRouter);
 app.use("/users", userRouter);

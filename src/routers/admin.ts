@@ -70,10 +70,9 @@ adminRouter.delete(
 
 adminRouter.get(
   "/settings",
-  verifyRequest({
-    isVerified: true,
-    role:"ADMIN",
-  }),
+  // verifyRequest({
+  //   isVerified: false,
+  // }),
   getMonetizationSettings
 )
 adminRouter.put(
