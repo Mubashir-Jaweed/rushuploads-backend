@@ -11,7 +11,8 @@
     "prisma:studio": "prisma studio",
     "start": "tsx src/server.ts",
     "watch": "tsx --watch src/server.ts",
-    "fix-data": "ts-node src/scripts/fix-all-collections.ts"
+    "fix-data": "ts-node src/scripts/fix-all-collections.ts",
+    "cleanup:weekly": "ts-node src/scripts/final-data-clean.ts"
   },
   "packageManager": "pnpm@9.15.4",
   "dependencies": {
