@@ -46,7 +46,7 @@ app.get("/test", verifyRequest({ isVerified: true }), (_request, response) => {
 });
 
 app.all("*", (_request, response) => {
-  response.notFound({}, { message: "Not Found!" });
+  response.notFound({}, { message: "Not Found?" });
 });
 
 app.use(
