@@ -199,74 +199,61 @@ async function claimRewards(request: Request, response: Response) {
 }
 
 
-// In your admin controller
-async function getMonetizationSettings(_request: Request, response: Response) {
+interface MonetizationSettings {
+  value: 'ON' | 'OFF';
+  redirectUrl: string;
+  bannerUrl: string;
+}
+
+const defaultMonetizationSettings: MonetizationSettings = {
+  value: 'OFF',
+  redirectUrl: '',
+  bannerUrl: ''
+};
+
+async function getMonetizationSettings(_req: Request, res: Response) {
   try {
     const settings = await prisma.setting.findUnique({
-      where: { key: 'monetization' },
-      select: { value: true } // Only select needed fields
+      where: { key: 'monetization' }
     });
 
-    const defaultSettings = {
-      value: "OFF",
-      redirectUrl: "",
-      bannerUrl: ""
-    };
+    const resultSettings = settings?.value 
+      ? (settings.value as MonetizationSettings)
+      : defaultMonetizationSettings;
 
-    return response.success(
-      {
-        data: settings?.value || defaultSettings
-      },
-      { message: "Monetization settings retrieved successfully" }
-    );
+    return res.status(200).json({
+      data: resultSettings,
+      message: "Monetization settings retrieved successfully"
+    });
   } catch (error) {
-    return handleErrors({ response, error });
+    return handleErrors({ response: res, error });
   }
 }
 
-async function updateMonetizationSettings(request: Request, response: Response) {
+async function updateMonetizationSettings(req: Request, res: Response) {
   try {
-    const { value, redirectUrl, bannerUrl } = request.body;
+    const { value, redirectUrl, bannerUrl } = req.body as MonetizationSettings;
 
-    // Validation
-    if (value && !["ON", "OFF"].includes(value)) {
-      return response.badRequest({}, { message: "Invalid value. Allowed values: 'ON' or 'OFF'." });
+    if (!['ON', 'OFF'].includes(value)) {
+      return res.status(400).json({ error: "Invalid monetization value" });
     }
 
-    const currentSettings = await prisma.setting.findUnique({
-      where: { key: 'monetization' },
-      select: { value: true }
-    });
-
-    const mergedSettings = {
-      value: value || (currentSettings?.value as any)?.value || "OFF",
-      redirectUrl: redirectUrl || (currentSettings?.value as any)?.redirectUrl || "",
-      bannerUrl: bannerUrl || (currentSettings?.value as any)?.bannerUrl || ""
-    };
-
-    const updatedSettings = await prisma.setting.upsert({
+    await prisma.setting.upsert({
       where: { key: 'monetization' },
       create: {
         key: 'monetization',
-        value: mergedSettings,
-        createdAt: new Date(), // Explicitly set createdAt
-        updatedAt: new Date(),
+        value: { value, redirectUrl, bannerUrl }
       },
       update: {
-        value: mergedSettings,
-        updatedAt: new Date(),
-      },
-      select: { value: true }
+        value: { value, redirectUrl, bannerUrl }
+      }
     });
 
-    return response.success(
-      {
-        data: updatedSettings.value
-      },
-      { message: "Monetization settings updated successfully" }
-    );
+    return res.status(200).json({
+      message: "Monetization settings updated successfully"
+    });
   } catch (error) {
-    return handleErrors({ response, error });
+    return handleErrors({ response: res, error });
   }
 }
 

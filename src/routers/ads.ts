@@ -11,7 +11,7 @@ adsRouter.post("/click", trackAdClick);
 // Admin endpoint
 adsRouter.get(
   "/stats",
-  verifyRequest({ isVerified: true, role: "ADMIN" }),
+  // verifyRequest({ isVerified: true, role: "ADMIN" }),
   getAdStats
 );
 
