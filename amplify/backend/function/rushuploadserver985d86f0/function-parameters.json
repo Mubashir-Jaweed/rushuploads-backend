@@ -1,0 +1,117 @@
+{
+  "permissions": {},
+  "lambdaLayers": [],
+  "environmentVariableList": [
+    {
+      "cloudFormationParameterName": "nodeEnv",
+      "environmentVariableName": "NODE_ENV"
+    },
+    {
+      "cloudFormationParameterName": "port",
+      "environmentVariableName": "PORT"
+    },
+    {
+      "cloudFormationParameterName": "jwtSecret",
+      "environmentVariableName": "JWT_SECRET"
+    },
+    {
+      "cloudFormationParameterName": "jwtExpiry",
+      "environmentVariableName": "JWT_EXPIRY"
+    },
+    {
+      "cloudFormationParameterName": "nodemailerHost",
+      "environmentVariableName": "NODEMAILER_HOST"
+    },
+    {
+      "cloudFormationParameterName": "nodemailerPort",
+      "environmentVariableName": "NODEMAILER_PORT"
+    },
+    {
+      "cloudFormationParameterName": "nodemailerSecure",
+      "environmentVariableName": "NODEMAILER_SECURE"
+    },
+    {
+      "cloudFormationParameterName": "nodemailerEmail",
+      "environmentVariableName": "NODEMAILER_EMAIL"
+    },
+    {
+      "cloudFormationParameterName": "nodemailerPassword",
+      "environmentVariableName": "NODEMAILER_PASSWORD"
+    },
+    {
+      "cloudFormationParameterName": "databaseUrl",
+      "environmentVariableName": "DATABASE_URL"
+    },
+    {
+      "cloudFormationParameterName": "clientBaseUrl",
+      "environmentVariableName": "CLIENT_BASE_URL"
+    },
+    {
+      "cloudFormationParameterName": "appName",
+      "environmentVariableName": "APP_NAME"
+    },
+    {
+      "cloudFormationParameterName": "appSupportEmail",
+      "environmentVariableName": "APP_SUPPORT_EMAIL"
+    },
+    {
+      "cloudFormationParameterName": "appAdminEmail",
+      "environmentVariableName": "APP_ADMIN_EMAIL"
+    },
+    {
+      "cloudFormationParameterName": "awsAccessKeyId",
+      "environmentVariableName": "AWS_ACCESS_KEY_ID"
+    },
+    {
+      "cloudFormationParameterName": "awsSecretAccessKey",
+      "environmentVariableName": "AWS_SECRET_ACCESS_KEY"
+    },
+    {
+      "cloudFormationParameterName": "awsBucket",
+      "environmentVariableName": "AWS_BUCKET"
+    },
+    {
+      "cloudFormationParameterName": "awsRegion",
+      "environmentVariableName": "AWS_REGION"
+    },
+    {
+      "cloudFormationParameterName": "stripeSecretKey",
+      "environmentVariableName": "STRIPE_SECRET_KEY"
+    },
+    {
+      "cloudFormationParameterName": "stripeWebhookSecretKey",
+      "environmentVariableName": "STRIPE_WEBHOOK_SECRET_KEY"
+    },
+    {
+      "cloudFormationParameterName": "stripeProPriceId",
+      "environmentVariableName": "STRIPE_PRO_PRICE_ID"
+    },
+    {
+      "cloudFormationParameterName": "stripePremiumPriceId",
+      "environmentVariableName": "STRIPE_PREMIUM_PRICE_ID"
+    },
+    {
+      "cloudFormationParameterName": "stripeSuccessEndpoint",
+      "environmentVariableName": "STRIPE_SUCCESS_ENDPOINT"
+    },
+    {
+      "cloudFormationParameterName": "stripeCancelEndpoint",
+      "environmentVariableName": "STRIPE_CANCEL_ENDPOINT"
+    },
+    {
+      "cloudFormationParameterName": "stripeReturnEndpoint",
+      "environmentVariableName": "STRIPE_RETURN_ENDPOINT"
+    },
+    {
+      "cloudFormationParameterName": "awsS3DisableChecksum",
+      "environmentVariableName": "AWS_S3_DISABLE_CHECKSUM"
+    },
+    {
+      "cloudFormationParameterName": "awsRequestChecksumCalculation",
+      "environmentVariableName": "AWS_REQUEST_CHECKSUM_CALCULATION"
+    }
+  ],
+  "secretNames": [
+    "DB_PASSWORD"
+  ]
+}

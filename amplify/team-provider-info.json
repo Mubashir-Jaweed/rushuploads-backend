@@ -1,0 +1,49 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-rushuploadserver-dev-3e921-authRole",
+      "UnauthRoleArn": "arn:aws:iam::476114157627:role/amplify-rushuploadserver-dev-3e921-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::476114157627:role/amplify-rushuploadserver-dev-3e921-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-rushuploadserver-dev-3e921-deployment",
+      "UnauthRoleName": "amplify-rushuploadserver-dev-3e921-unauthRole",
+      "StackName": "amplify-rushuploadserver-dev-3e921",
+      "StackId": "arn:aws:cloudformation:us-east-1:476114157627:stack/amplify-rushuploadserver-dev-3e921/11d0e5b0-0db5-11f0-8168-0affdc8be2f5",
+      "AmplifyAppId": "dj7jgzgns25i9"
+    },
+    "categories": {
+      "function": {
+        "rushuploadserver985d86f0": {
+          "nodeEnv": "development",
+          "port": "8000",
+          "jwtSecret": "jwt",
+          "jwtExpiry": "7d",
+          "nodemailerHost": "smtp.titan.email",
+          "nodemailerPort": "465",
+          "nodemailerSecure": "true",
+          "nodemailerEmail": "support@rushuploads.com",
+          "nodemailerPassword": "TFq@r6B#KN$I0q%3F^XGi*0",
+          "databaseUrl": "mongodb+srv://mubashirmjjawed:eFpuZ2WWevoekPO5@cluster0.r3bdggm.mongodb.net/rushuploads-production",
+          "clientBaseUrl": "https://rushuploads.com",
+          "appName": "Rush Uploads",
+          "appSupportEmail": "support@rushuploads.com",
+          "appAdminEmail": "admin@rushuploads.com",
+          "awsAccessKeyId": "NI79MERRJAH1U7G5FNZO",
+          "awsSecretAccessKey": "HApD7PenTXV7hhECW1oSJGslf56YazofBWe2DFke",
+          "awsBucket": "rushuploads-bucket",
+          "awsRegion": "us-west-1",
+          "stripeSecretKey": "sk_test_",
+          "stripeWebhookSecretKey": "wsk_test_",
+          "stripeProPriceId": "price_",
+          "stripePremiumPriceId": "price_",
+          "stripeSuccessEndpoint": "/",
+          "stripeCancelEndpoint": "/",
+          "stripeReturnEndpoint": "/",
+          "awsS3DisableChecksum": "true",
+          "awsRequestChecksumCalculation": "WHEN_REQUIRED",
+          "secretsPathAmplifyAppId": "dj7jgzgns25i9"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,252 @@
+{
+  "api": {
+    "api789aeabe": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "rushuploadserver985d86f0"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    }
+  },
+  "function": {
+    "rushuploadserver985d86f0": {
+      "build": true,
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_function_rushuploadserver985d86f0_appAdminEmail": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rushuploadserver985d86f0"
+        }
+      ]
+    },
+    "AMPLIFY_function_rushuploadserver985d86f0_appName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rushuploadserver985d86f0"
+        }
+      ]
+    },
+    "AMPLIFY_function_rushuploadserver985d86f0_appSupportEmail": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rushuploadserver985d86f0"
+        }
+      ]
+    },
+    "AMPLIFY_function_rushuploadserver985d86f0_awsAccessKeyId": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rushuploadserver985d86f0"
+        }
+      ]
+    },
+    "AMPLIFY_function_rushuploadserver985d86f0_awsBucket": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rushuploadserver985d86f0"
+        }
+      ]
+    },
+    "AMPLIFY_function_rushuploadserver985d86f0_awsRegion": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rushuploadserver985d86f0"
+        }
+      ]
+    },
+    "AMPLIFY_function_rushuploadserver985d86f0_awsRequestChecksumCalculation": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rushuploadserver985d86f0"
+        }
+      ]
+    },
+    "AMPLIFY_function_rushuploadserver985d86f0_awsS3DisableChecksum": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rushuploadserver985d86f0"
+        }
+      ]
+    },
+    "AMPLIFY_function_rushuploadserver985d86f0_awsSecretAccessKey": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rushuploadserver985d86f0"
+        }
+      ]
+    },
+    "AMPLIFY_function_rushuploadserver985d86f0_clientBaseUrl": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rushuploadserver985d86f0"
+        }
+      ]
+    },
+    "AMPLIFY_function_rushuploadserver985d86f0_databaseUrl": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rushuploadserver985d86f0"
+        }
+      ]
+    },
+    "AMPLIFY_function_rushuploadserver985d86f0_jwtExpiry": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rushuploadserver985d86f0"
+        }
+      ]
+    },
+    "AMPLIFY_function_rushuploadserver985d86f0_jwtSecret": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rushuploadserver985d86f0"
+        }
+      ]
+    },
+    "AMPLIFY_function_rushuploadserver985d86f0_nodeEnv": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rushuploadserver985d86f0"
+        }
+      ]
+    },
+    "AMPLIFY_function_rushuploadserver985d86f0_nodemailerEmail": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rushuploadserver985d86f0"
+        }
+      ]
+    },
+    "AMPLIFY_function_rushuploadserver985d86f0_nodemailerHost": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rushuploadserver985d86f0"
+        }
+      ]
+    },
+    "AMPLIFY_function_rushuploadserver985d86f0_nodemailerPassword": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rushuploadserver985d86f0"
+        }
+      ]
+    },
+    "AMPLIFY_function_rushuploadserver985d86f0_nodemailerPort": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rushuploadserver985d86f0"
+        }
+      ]
+    },
+    "AMPLIFY_function_rushuploadserver985d86f0_nodemailerSecure": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rushuploadserver985d86f0"
+        }
+      ]
+    },
+    "AMPLIFY_function_rushuploadserver985d86f0_port": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rushuploadserver985d86f0"
+        }
+      ]
+    },
+    "AMPLIFY_function_rushuploadserver985d86f0_secretsPathAmplifyAppId": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rushuploadserver985d86f0"
+        }
+      ]
+    },
+    "AMPLIFY_function_rushuploadserver985d86f0_stripeCancelEndpoint": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rushuploadserver985d86f0"
+        }
+      ]
+    },
+    "AMPLIFY_function_rushuploadserver985d86f0_stripePremiumPriceId": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rushuploadserver985d86f0"
+        }
+      ]
+    },
+    "AMPLIFY_function_rushuploadserver985d86f0_stripeProPriceId": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rushuploadserver985d86f0"
+        }
+      ]
+    },
+    "AMPLIFY_function_rushuploadserver985d86f0_stripeReturnEndpoint": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rushuploadserver985d86f0"
+        }
+      ]
+    },
+    "AMPLIFY_function_rushuploadserver985d86f0_stripeSecretKey": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rushuploadserver985d86f0"
+        }
+      ]
+    },
+    "AMPLIFY_function_rushuploadserver985d86f0_stripeSuccessEndpoint": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rushuploadserver985d86f0"
+        }
+      ]
+    },
+    "AMPLIFY_function_rushuploadserver985d86f0_stripeWebhookSecretKey": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rushuploadserver985d86f0"
+        }
+      ]
+    }
+  }
+}

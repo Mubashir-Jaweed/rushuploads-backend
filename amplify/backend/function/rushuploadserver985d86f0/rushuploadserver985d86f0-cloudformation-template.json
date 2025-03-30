@@ -1,0 +1,438 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Lambda Function resource stack creation using Amplify CLI",
+  "Parameters": {
+    "CloudWatchRule": {
+      "Type": "String",
+      "Default": "NONE",
+      "Description": " Schedule Expression"
+    },
+    "deploymentBucketName": {
+      "Type": "String"
+    },
+    "env": {
+      "Type": "String"
+    },
+    "s3Key": {
+      "Type": "String"
+    },
+    "nodeEnv": {
+      "Type": "String"
+    },
+    "port": {
+      "Type": "String"
+    },
+    "jwtSecret": {
+      "Type": "String"
+    },
+    "jwtExpiry": {
+      "Type": "String"
+    },
+    "nodemailerHost": {
+      "Type": "String"
+    },
+    "nodemailerPort": {
+      "Type": "String"
+    },
+    "nodemailerSecure": {
+      "Type": "String"
+    },
+    "nodemailerEmail": {
+      "Type": "String"
+    },
+    "nodemailerPassword": {
+      "Type": "String"
+    },
+    "databaseUrl": {
+      "Type": "String"
+    },
+    "clientBaseUrl": {
+      "Type": "String"
+    },
+    "appName": {
+      "Type": "String"
+    },
+    "appSupportEmail": {
+      "Type": "String"
+    },
+    "appAdminEmail": {
+      "Type": "String"
+    },
+    "awsAccessKeyId": {
+      "Type": "String"
+    },
+    "awsSecretAccessKey": {
+      "Type": "String"
+    },
+    "awsBucket": {
+      "Type": "String"
+    },
+    "awsRegion": {
+      "Type": "String"
+    },
+    "stripeSecretKey": {
+      "Type": "String"
+    },
+    "stripeWebhookSecretKey": {
+      "Type": "String"
+    },
+    "stripeProPriceId": {
+      "Type": "String"
+    },
+    "stripePremiumPriceId": {
+      "Type": "String"
+    },
+    "stripeSuccessEndpoint": {
+      "Type": "String"
+    },
+    "stripeCancelEndpoint": {
+      "Type": "String"
+    },
+    "stripeReturnEndpoint": {
+      "Type": "String"
+    },
+    "awsS3DisableChecksum": {
+      "Type": "String"
+    },
+    "awsRequestChecksumCalculation": {
+      "Type": "String"
+    },
+    "secretsPathAmplifyAppId": {
+      "Type": "String"
+    }
+  },
+  "Conditions": {
+    "ShouldNotCreateEnvResources": {
+      "Fn::Equals": [
+        {
+          "Ref": "env"
+        },
+        "NONE"
+      ]
+    }
+  },
+  "Resources": {
+    "LambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Metadata": {
+        "aws:asset:path": "./src",
+        "aws:asset:property": "Code"
+      },
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "deploymentBucketName"
+          },
+          "S3Key": {
+            "Ref": "s3Key"
+          }
+        },
+        "Handler": "index.handler",
+        "FunctionName": {
+          "Fn::If": [
+            "ShouldNotCreateEnvResources",
+            "rushuploadserver985d86f0",
+            {
+              "Fn::Join": [
+                "",
+                [
+                  "rushuploadserver985d86f0",
+                  "-",
+                  {
+                    "Ref": "env"
+                  }
+                ]
+              ]
+            }
+          ]
+        },
+        "Environment": {
+          "Variables": {
+            "ENV": {
+              "Ref": "env"
+            },
+            "REGION": {
+              "Ref": "AWS::Region"
+            },
+            "NODE_ENV": {
+              "Ref": "nodeEnv"
+            },
+            "PORT": {
+              "Ref": "port"
+            },
+            "JWT_SECRET": {
+              "Ref": "jwtSecret"
+            },
+            "JWT_EXPIRY": {
+              "Ref": "jwtExpiry"
+            },
+            "NODEMAILER_HOST": {
+              "Ref": "nodemailerHost"
+            },
+            "NODEMAILER_PORT": {
+              "Ref": "nodemailerPort"
+            },
+            "NODEMAILER_SECURE": {
+              "Ref": "nodemailerSecure"
+            },
+            "NODEMAILER_EMAIL": {
+              "Ref": "nodemailerEmail"
+            },
+            "NODEMAILER_PASSWORD": {
+              "Ref": "nodemailerPassword"
+            },
+            "DATABASE_URL": {
+              "Ref": "databaseUrl"
+            },
+            "CLIENT_BASE_URL": {
+              "Ref": "clientBaseUrl"
+            },
+            "APP_NAME": {
+              "Ref": "appName"
+            },
+            "APP_SUPPORT_EMAIL": {
+              "Ref": "appSupportEmail"
+            },
+            "APP_ADMIN_EMAIL": {
+              "Ref": "appAdminEmail"
+            },
+            "AWS_ACCESS_KEY_ID": {
+              "Ref": "awsAccessKeyId"
+            },
+            "AWS_SECRET_ACCESS_KEY": {
+              "Ref": "awsSecretAccessKey"
+            },
+            "AWS_BUCKET": {
+              "Ref": "awsBucket"
+            },
+            "AWS_REGION": {
+              "Ref": "awsRegion"
+            },
+            "STRIPE_SECRET_KEY": {
+              "Ref": "stripeSecretKey"
+            },
+            "STRIPE_WEBHOOK_SECRET_KEY": {
+              "Ref": "stripeWebhookSecretKey"
+            },
+            "STRIPE_PRO_PRICE_ID": {
+              "Ref": "stripeProPriceId"
+            },
+            "STRIPE_PREMIUM_PRICE_ID": {
+              "Ref": "stripePremiumPriceId"
+            },
+            "STRIPE_SUCCESS_ENDPOINT": {
+              "Ref": "stripeSuccessEndpoint"
+            },
+            "STRIPE_CANCEL_ENDPOINT": {
+              "Ref": "stripeCancelEndpoint"
+            },
+            "STRIPE_RETURN_ENDPOINT": {
+              "Ref": "stripeReturnEndpoint"
+            },
+            "AWS_S3_DISABLE_CHECKSUM": {
+              "Ref": "awsS3DisableChecksum"
+            },
+            "AWS_REQUEST_CHECKSUM_CALCULATION": {
+              "Ref": "awsRequestChecksumCalculation"
+            },
+            "DB_PASSWORD": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Fn::Sub": [
+                      "/amplify/${appId}/${env}/AMPLIFY_${functionName}_",
+                      {
+                        "appId": {
+                          "Ref": "secretsPathAmplifyAppId"
+                        },
+                        "env": {
+                          "Ref": "env"
+                        },
+                        "functionName": "rushuploadserver985d86f0"
+                      }
+                    ]
+                  },
+                  "DB_PASSWORD"
+                ]
+              ]
+            }
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "LambdaExecutionRole",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs22.x",
+        "Layers": [],
+        "Timeout": 25
+      }
+    },
+    "LambdaExecutionRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": {
+          "Fn::If": [
+            "ShouldNotCreateEnvResources",
+            "rushuploadserverLambdaRole0b456c22",
+            {
+              "Fn::Join": [
+                "",
+                [
+                  "rushuploadserverLambdaRole0b456c22",
+                  "-",
+                  {
+                    "Ref": "env"
+                  }
+                ]
+              ]
+            }
+          ]
+        },
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "lambda.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "lambdaexecutionpolicy": {
+      "DependsOn": [
+        "LambdaExecutionRole"
+      ],
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "lambda-execution-policy",
+        "Roles": [
+          {
+            "Ref": "LambdaExecutionRole"
+          }
+        ],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Resource": {
+                "Fn::Sub": [
+                  "arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*",
+                  {
+                    "region": {
+                      "Ref": "AWS::Region"
+                    },
+                    "account": {
+                      "Ref": "AWS::AccountId"
+                    },
+                    "lambda": {
+                      "Ref": "LambdaFunction"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    "AmplifyFunctionSecretsPolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "amplify-function-secrets-policy",
+        "Roles": [
+          {
+            "Ref": "LambdaExecutionRole"
+          }
+        ],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "ssm:GetParameter",
+                "ssm:GetParameters"
+              ],
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:ssm:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":parameter",
+                    {
+                      "Fn::Sub": [
+                        "/amplify/${appId}/${env}/AMPLIFY_${functionName}_",
+                        {
+                          "appId": {
+                            "Ref": "secretsPathAmplifyAppId"
+                          },
+                          "env": {
+                            "Ref": "env"
+                          },
+                          "functionName": "rushuploadserver985d86f0"
+                        }
+                      ]
+                    },
+                    "*"
+                  ]
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "LambdaExecutionRole"
+      ]
+    }
+  },
+  "Outputs": {
+    "Name": {
+      "Value": {
+        "Ref": "LambdaFunction"
+      }
+    },
+    "Arn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "LambdaFunction",
+          "Arn"
+        ]
+      }
+    },
+    "Region": {
+      "Value": {
+        "Ref": "AWS::Region"
+      }
+    },
+    "LambdaExecutionRole": {
+      "Value": {
+        "Ref": "LambdaExecutionRole"
+      }
+    }
+  }
+}
