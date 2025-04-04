@@ -41,7 +41,7 @@ switch (env.NODE_ENV) {
 server.timeout = 0;
 server.keepAliveTimeout = 0;
 
-server.listen({ port: env.PORT }, () => {
+server.listen({ port: env.PORT ,host :'0.0.0.0'}, () => {
   console.log(
     `Server is live on ${env.NODE_ENV === "production" ? "https" : "http"}://localhost:${env.PORT}`,
   );

@@ -41,6 +41,10 @@ app.use("/files", fileRouter);
 app.use("/subscriptions", subscriptionRouter);
 app.use("/support", supportRouter);
 
+app.get("/", (req, res) => {
+  res.send("Backend is live!");
+});
+
 app.get("/test", verifyRequest({ isVerified: true }), (_request, response) => {
   response.success({}, { message: "Test route!" });
 });
