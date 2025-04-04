@@ -112,6 +112,14 @@
         }
       ]
     },
+    "AMPLIFY_function_rushuploadserver985d86f0_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rushuploadserver985d86f0"
+        }
+      ]
+    },
     "AMPLIFY_function_rushuploadserver985d86f0_jwtExpiry": {
       "usedBy": [
         {
@@ -177,6 +185,14 @@
       ]
     },
     "AMPLIFY_function_rushuploadserver985d86f0_port": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rushuploadserver985d86f0"
+        }
+      ]
+    },
+    "AMPLIFY_function_rushuploadserver985d86f0_s3Key": {
       "usedBy": [
         {
           "category": "function",

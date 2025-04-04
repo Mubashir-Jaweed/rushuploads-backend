@@ -229,34 +229,50 @@ async function getMonetizationSettings(_req: Request, res: Response) {
     return handleErrors({ response: res, error });
   }
 }
-
 async function updateMonetizationSettings(req: Request, res: Response) {
   try {
-    const { value, redirectUrl, bannerUrl } = req.body as MonetizationSettings;
+    const { value, redirectUrl, bannerUrl } = req.body as Partial<MonetizationSettings>;
 
-    if (!['ON', 'OFF'].includes(value)) {
+    // Determine base values (existing or defaults)
+    const existingSetting = await prisma.setting.findUnique({
+      where: { key: 'monetization' },
+    });
+
+    // Merge values based on existence
+    const baseValues = existingSetting?.value as MonetizationSettings || {
+      value: 'OFF', // Default state
+      redirectUrl: '',
+      bannerUrl: ''
+    };
+
+    const updatedValue: MonetizationSettings = {
+      value: value ?? baseValues.value,
+      redirectUrl: redirectUrl ?? baseValues.redirectUrl,
+      bannerUrl: bannerUrl ?? baseValues.bannerUrl,
+    };
+
+    // Validate
+    if (!['ON', 'OFF'].includes(updatedValue.value)) {
       return res.status(400).json({ error: "Invalid monetization value" });
     }
 
+    // Upsert (create or update) the setting
     await prisma.setting.upsert({
       where: { key: 'monetization' },
+      update: { value: updatedValue },
       create: {
         key: 'monetization',
-        value: { value, redirectUrl, bannerUrl }
+        value: updatedValue,
       },
-      update: {
-        value: { value, redirectUrl, bannerUrl }
-      }
     });
 
     return res.status(200).json({
-      message: "Monetization settings updated successfully"
+      message: "Monetization settings updated successfully",
     });
   } catch (error) {
     return handleErrors({ response: res, error });
   }
 }
-
 export {
   getKPIs,
   getAllUsers,

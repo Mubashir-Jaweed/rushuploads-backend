@@ -14,6 +14,10 @@
     "categories": {
       "function": {
         "rushuploadserver985d86f0": {
+          "awsAccessKeyId": "NI79MERRJAH1U7G5FNZO",
+          "awsSecretAccessKey": "HApD7PenTXV7hhECW1oSJGslf56YazofBWe2DFke",
+          "awsRegion": "us-west-1",
+          "secretsPathAmplifyAppId": "dj7jgzgns25i9",
           "nodeEnv": "development",
           "port": "8000",
           "jwtSecret": "jwt",
@@ -28,10 +32,7 @@
           "appName": "Rush Uploads",
           "appSupportEmail": "support@rushuploads.com",
           "appAdminEmail": "admin@rushuploads.com",
-          "awsAccessKeyId": "NI79MERRJAH1U7G5FNZO",
-          "awsSecretAccessKey": "HApD7PenTXV7hhECW1oSJGslf56YazofBWe2DFke",
           "awsBucket": "rushuploads-bucket",
-          "awsRegion": "us-west-1",
           "stripeSecretKey": "sk_test_",
           "stripeWebhookSecretKey": "wsk_test_",
           "stripeProPriceId": "price_",
@@ -41,8 +42,12 @@
           "stripeReturnEndpoint": "/",
           "awsS3DisableChecksum": "true",
           "awsRequestChecksumCalculation": "WHEN_REQUIRED",
-          "secretsPathAmplifyAppId": "dj7jgzgns25i9"
+          "deploymentBucketName": "amplify-rushuploadserver-dev-3e921-deployment",
+          "s3Key": "amplify-builds/rushuploadserver985d86f0-75795563557252427059-build.zip"
         }
+      },
+      "api": {
+        "api789aeabe": {}
       }
     }
   }

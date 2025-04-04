@@ -3,6 +3,18 @@
   "lambdaLayers": [],
   "environmentVariableList": [
     {
+      "cloudFormationParameterName": "awsAccessKeyId",
+      "environmentVariableName": "AWS_ACCESS_KEY_ID"
+    },
+    {
+      "cloudFormationParameterName": "awsSecretAccessKey",
+      "environmentVariableName": "AWS_SECRET_ACCESS_KEY"
+    },
+    {
+      "cloudFormationParameterName": "awsRegion",
+      "environmentVariableName": "AWS_REGION"
+    },
+    {
       "cloudFormationParameterName": "nodeEnv",
       "environmentVariableName": "NODE_ENV"
     },
@@ -59,20 +71,8 @@
       "environmentVariableName": "APP_ADMIN_EMAIL"
     },
     {
-      "cloudFormationParameterName": "awsAccessKeyId",
-      "environmentVariableName": "AWS_ACCESS_KEY_ID"
-    },
-    {
-      "cloudFormationParameterName": "awsSecretAccessKey",
-      "environmentVariableName": "AWS_SECRET_ACCESS_KEY"
-    },
-    {
       "cloudFormationParameterName": "awsBucket",
       "environmentVariableName": "AWS_BUCKET"
-    },
-    {
-      "cloudFormationParameterName": "awsRegion",
-      "environmentVariableName": "AWS_REGION"
     },
     {
       "cloudFormationParameterName": "stripeSecretKey",

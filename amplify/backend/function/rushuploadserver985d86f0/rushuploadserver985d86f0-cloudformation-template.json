@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Lambda Function resource stack creation using Amplify CLI",
+  "Description": "{\"createdOn\":\"Windows\",\"createdBy\":\"Amplify\",\"createdWith\":\"13.0.0\",\"stackType\":\"function-Lambda\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
   "Parameters": {
     "CloudWatchRule": {
       "Type": "String",
@@ -14,6 +14,18 @@
       "Type": "String"
     },
     "s3Key": {
+      "Type": "String"
+    },
+    "awsAccessKeyId": {
+      "Type": "String"
+    },
+    "awsSecretAccessKey": {
+      "Type": "String"
+    },
+    "awsRegion": {
+      "Type": "String"
+    },
+    "secretsPathAmplifyAppId": {
       "Type": "String"
     },
     "nodeEnv": {
@@ -58,16 +70,7 @@
     "appAdminEmail": {
       "Type": "String"
     },
-    "awsAccessKeyId": {
-      "Type": "String"
-    },
-    "awsSecretAccessKey": {
-      "Type": "String"
-    },
     "awsBucket": {
-      "Type": "String"
-    },
-    "awsRegion": {
       "Type": "String"
     },
     "stripeSecretKey": {
@@ -95,9 +98,6 @@
       "Type": "String"
     },
     "awsRequestChecksumCalculation": {
-      "Type": "String"
-    },
-    "secretsPathAmplifyAppId": {
       "Type": "String"
     }
   },
@@ -154,6 +154,28 @@
             "REGION": {
               "Ref": "AWS::Region"
             },
+            "DB_PASSWORD": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Fn::Sub": [
+                      "/amplify/${appId}/${env}/AMPLIFY_${functionName}_",
+                      {
+                        "appId": {
+                          "Ref": "secretsPathAmplifyAppId"
+                        },
+                        "env": {
+                          "Ref": "env"
+                        },
+                        "functionName": "rushuploadserver985d86f0"
+                      }
+                    ]
+                  },
+                  "DB_PASSWORD"
+                ]
+              ]
+            },
             "NODE_ENV": {
               "Ref": "nodeEnv"
             },
@@ -196,17 +218,8 @@
             "APP_ADMIN_EMAIL": {
               "Ref": "appAdminEmail"
             },
-            "AWS_ACCESS_KEY_ID": {
-              "Ref": "awsAccessKeyId"
-            },
-            "AWS_SECRET_ACCESS_KEY": {
-              "Ref": "awsSecretAccessKey"
-            },
             "AWS_BUCKET": {
               "Ref": "awsBucket"
-            },
-            "AWS_REGION": {
-              "Ref": "awsRegion"
             },
             "STRIPE_SECRET_KEY": {
               "Ref": "stripeSecretKey"
@@ -234,28 +247,6 @@
             },
             "AWS_REQUEST_CHECKSUM_CALCULATION": {
               "Ref": "awsRequestChecksumCalculation"
-            },
-            "DB_PASSWORD": {
-              "Fn::Join": [
-                "",
-                [
-                  {
-                    "Fn::Sub": [
-                      "/amplify/${appId}/${env}/AMPLIFY_${functionName}_",
-                      {
-                        "appId": {
-                          "Ref": "secretsPathAmplifyAppId"
-                        },
-                        "env": {
-                          "Ref": "env"
-                        },
-                        "functionName": "rushuploadserver985d86f0"
-                      }
-                    ]
-                  },
-                  "DB_PASSWORD"
-                ]
-              ]
             }
           }
         },
@@ -432,6 +423,14 @@
     "LambdaExecutionRole": {
       "Value": {
         "Ref": "LambdaExecutionRole"
+      }
+    },
+    "LambdaExecutionRoleArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "LambdaExecutionRole",
+          "Arn"
+        ]
       }
     }
   }
