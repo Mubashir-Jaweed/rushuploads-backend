@@ -273,6 +273,81 @@ async function updateMonetizationSettings(req: Request, res: Response) {
     return handleErrors({ response: res, error });
   }
 }
+
+
+async function updateUser(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+
+    // Remove sensitive fields that shouldn't be updated through this endpoint
+    const { password, refreshToken, ...safeUpdateData } = updateData;
+
+    const updatedUser = await prisma.user.update({
+      where: { id },
+      data: safeUpdateData,
+    });
+
+    // Omit sensitive fields from response
+    const { password: _, refreshToken: __, ...safeUser } = updatedUser;
+
+    res.status(200).json(safeUser);
+  } catch (error) {
+    console.error('Error updating user:', error);
+    
+    if (error instanceof Error) {
+      if (error.message.includes('Record to update not found')) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      if (error.message.includes('Invalid value')) {
+        return res.status(400).json({ message: 'Invalid data provided' });
+      }
+    }
+
+    res.status(500).json({ message: 'Failed to update user' });
+  }
+}
+
+
+async function updateFile(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+    const { originalName } = req.body;
+
+    // Validate the filename
+    if (!originalName?.trim()) {
+      return res.status(400).json({ message: 'File name is required' });
+    }
+
+    // Update only the originalName field
+    const updatedFile = await prisma.file.update({
+      where: { id },
+      data: { 
+        originalName: originalName.trim() 
+      },
+      select: {
+        id: true,
+        originalName: true,
+        updatedAt: true
+      }
+    });
+
+    res.status(200).json(updatedFile);
+  } catch (error) {
+    console.error('Error updating file:', error);
+    
+    // Handle Prisma errors
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === 'P2025') {
+        return res.status(404).json({ message: 'File not found' });
+      }
+    }
+
+    res.status(500).json({ message: 'Failed to update file name' });
+  }
+}
+
+
 export {
   getKPIs,
   getAllUsers,
@@ -282,4 +357,6 @@ export {
   claimRewards,
   getMonetizationSettings,
   updateMonetizationSettings,
+  updateUser,
+  updateFile
 };

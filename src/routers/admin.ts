@@ -8,7 +8,9 @@ import {
   getAllUsers,
   getKPIs,
   getMonetizationSettings,
+  updateFile,
   updateMonetizationSettings,
+  updateUser,
 } from "../controllers/admin";
 import { verifyRequest } from "../middlewares/auth";
 
@@ -66,6 +68,24 @@ adminRouter.delete(
     role: "ADMIN",
   }),
   deleteFile,
+);
+
+adminRouter.put(
+  "/users/:id",
+  verifyRequest({
+    isVerified: true,
+    role: "ADMIN",
+  }),
+  updateUser
+);
+
+adminRouter.put(
+  "/files/:id",
+  verifyRequest({
+    isVerified: true,
+    role: "ADMIN",
+  }),
+  updateFile
 );
 
 adminRouter.get(
