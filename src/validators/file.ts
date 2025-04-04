@@ -75,6 +75,9 @@ const sendFileMailBodySchema = zod.object({
         type: zod.string({
           message: "Type must be a string!",
         }),
+        size:zod.number({
+          message:"Type must be a number!",
+        })
       }),
     )
     .min(1, {
