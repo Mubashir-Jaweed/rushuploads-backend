@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-
+import clamd from 'clamdjs';
 import { TierConstraints } from "../constants/tiers";
 import { env } from "../lib/env";
 import { BadResponse, handleErrors } from "../lib/error";
@@ -24,6 +24,8 @@ import {
   updateFileParamsSchema,
 } from "../validators/file";
 
+const scanner = clamd.createScanner('127.0.0.1', 3310); 
+
 async function startMultipartUpload(request: Request, response: Response) {
   try {
     const { originalName, mimeType } = request.body;
@@ -47,6 +49,14 @@ async function uploadChunk(request: Request, response: Response) {
     const { key, uploadId, chunkNumber } = request.body;
 
     const chunk = request.file.buffer;
+
+    const scanResult = await scanner.scanBuffer(chunk);
+    if (!clamd.isCleanReply(scanResult)) {
+      return response.badRequest(
+        { data: {} },
+        { message: "File Contain Virus" },
+      );
+    }
 
     const { eTag } = await uploadFileChunk({
       partNumber: chunkNumber,
@@ -77,77 +87,6 @@ async function finalizeMultipartUpload(request: Request, response: Response) {
       {
         message: "Multipart upload completed successfully!",
       },
-    );
-  } catch (error) {
-    return handleErrors({ response, error });
-  }
-}
-
-async function getUserSharedFiles(request: Request, response: Response) {
-  try {
-    const { files } = await getFilesByUserId({ userId: request.user?.id });
-
-    const augmentedFiles = files.map((file) => ({
-      ...file,
-      url: `https://${env.AWS_BUCKET}.s3.${env.AWS_REGION}.wasabisys.com/${file.name}`,
-    }));
-
-    return response.success(
-      {
-        data: { files: augmentedFiles },
-      },
-      { message: "Files Fetched Successfully!" },
-    );
-  } catch (error) {
-    return handleErrors({ response, error });
-  }
-}
-
-async function getUserReceivedFiles(request: Request, response: Response) {
-  try {
-    const { files } = await getSharedFilesByUserId({
-      userId: request.user?.id,
-    });
-
-    const augmentedFiles = files.map((file) => ({
-      ...file,
-      url: `https://${env.AWS_BUCKET}.s3.${env.AWS_REGION}.wasabisys.com/${file.name}`,
-    }));
-
-    return response.success(
-      {
-        data: { files: augmentedFiles },
-      },
-      { message: "Files Fetched Successfully!" },
-    );
-  } catch (error) {
-    return handleErrors({ response, error });
-  }
-}
-
-async function getLink(request: Request, response: Response) {
-  try {
-    const { linkId } = getLinkParamsSchema.parse(request.params);
-
-    const { link } = await getLinkById({ id: linkId });
-
-    if (!link) {
-      throw new BadResponse("Link Not Found!");
-    }
-
-    const augmentedFiles = link.files.map((file) => ({
-      ...file,
-      url: `https://${env.AWS_BUCKET}.s3.${env.AWS_REGION}.wasabisys.com/${file.name}`,
-    }));
-
-    link.files = augmentedFiles;
-
-
-    return response.success(
-      {
-        data: { link },
-      },
-      { message: "Link Fetched Successfully!" },
     );
   } catch (error) {
     return handleErrors({ response, error });
@@ -306,6 +245,77 @@ async function sendFileMail(request: Request, response: Response) {
         data: { mail },
       },
       { message: "Mail Sent Successfully!" },
+    );
+  } catch (error) {
+    return handleErrors({ response, error });
+  }
+}
+
+async function getUserSharedFiles(request: Request, response: Response) {
+  try {
+    const { files } = await getFilesByUserId({ userId: request.user?.id });
+
+    const augmentedFiles = files.map((file) => ({
+      ...file,
+      url: `https://${env.AWS_BUCKET}.s3.${env.AWS_REGION}.wasabisys.com/${file.name}`,
+    }));
+
+    return response.success(
+      {
+        data: { files: augmentedFiles },
+      },
+      { message: "Files Fetched Successfully!" },
+    );
+  } catch (error) {
+    return handleErrors({ response, error });
+  }
+}
+
+async function getUserReceivedFiles(request: Request, response: Response) {
+  try {
+    const { files } = await getSharedFilesByUserId({
+      userId: request.user?.id,
+    });
+
+    const augmentedFiles = files.map((file) => ({
+      ...file,
+      url: `https://${env.AWS_BUCKET}.s3.${env.AWS_REGION}.wasabisys.com/${file.name}`,
+    }));
+
+    return response.success(
+      {
+        data: { files: augmentedFiles },
+      },
+      { message: "Files Fetched Successfully!" },
+    );
+  } catch (error) {
+    return handleErrors({ response, error });
+  }
+}
+
+async function getLink(request: Request, response: Response) {
+  try {
+    const { linkId } = getLinkParamsSchema.parse(request.params);
+
+    const { link } = await getLinkById({ id: linkId });
+
+    if (!link) {
+      throw new BadResponse("Link Not Found!");
+    }
+
+    const augmentedFiles = link.files.map((file) => ({
+      ...file,
+      url: `https://${env.AWS_BUCKET}.s3.${env.AWS_REGION}.wasabisys.com/${file.name}`,
+    }));
+
+    link.files = augmentedFiles;
+
+
+    return response.success(
+      {
+        data: { link },
+      },
+      { message: "Link Fetched Successfully!" },
     );
   } catch (error) {
     return handleErrors({ response, error });
