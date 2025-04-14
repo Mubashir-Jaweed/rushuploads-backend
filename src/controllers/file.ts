@@ -24,7 +24,7 @@ import {
   updateFileParamsSchema,
 } from "../validators/file";
 
-const scanner = clamd.createScanner('127.0.0.1', 3310); 
+// const scanner = clamd.createScanner('127.0.0.1', 3310); 
 
 async function startMultipartUpload(request: Request, response: Response) {
   try {
@@ -45,6 +45,7 @@ async function startMultipartUpload(request: Request, response: Response) {
 }
 
 async function uploadChunk(request: Request, response: Response) {
+  console.log('scanning is stop for now')
   try {
     const { key, uploadId, chunkNumber } = request.body;
 
