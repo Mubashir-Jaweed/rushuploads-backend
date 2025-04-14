@@ -36,6 +36,10 @@ fileRouter.post(
   finalizeMultipartUpload,
 );
 
+fileRouter.post("/link", verifyRequest({ isVerified: true }), generateFileLink);
+
+fileRouter.post("/mail", verifyRequest({ isVerified: true }), sendFileMail);
+
 fileRouter.get(
   "/shared",
   verifyRequest({ isVerified: true }),
@@ -49,10 +53,6 @@ fileRouter.get(
 );
 
 fileRouter.get("/link/:linkId", getLink);
-
-fileRouter.post("/link", verifyRequest({ isVerified: true }), generateFileLink);
-
-fileRouter.post("/mail", verifyRequest({ isVerified: true }), sendFileMail);
 
 fileRouter.post("/download/:fileId", downloadFile);
 
