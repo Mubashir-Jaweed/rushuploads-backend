@@ -50,13 +50,13 @@ async function uploadChunk(request: Request, response: Response) {
 
     const chunk = request.file.buffer;
 
-    const scanResult = await scanner.scanBuffer(chunk);
-    if (!clamd.isCleanReply(scanResult)) {
-      return response.badRequest(
-        { data: {} },
-        { message: "File Contain Virus" },
-      );
-    }
+    // const scanResult = await scanner.scanBuffer(chunk);
+    // if (!clamd.isCleanReply(scanResult)) {
+    //   return response.badRequest(
+    //     { data: {} },
+    //     { message: "File Contain Virus" },
+    //   );
+    // }
 
     const { eTag } = await uploadFileChunk({
       partNumber: chunkNumber,
