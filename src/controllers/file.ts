@@ -24,6 +24,8 @@ import {
   sendFileMailBodySchema,
   updateFileParamsSchema,
 } from "../validators/file";
+import { S3Client, UploadPartCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const scanner = clamd.createScanner('127.0.0.1', 3310);
 
@@ -97,7 +99,7 @@ const scanner = clamd.createScanner('127.0.0.1', 3310);
 const s3 = new AWS.S3({
   accessKeyId: process.env.WASABI_ACCESS_KEY_ID,
   secretAccessKey: process.env.WASABI_SECRET_ACCESS_KEY,
-  endpoint:'https://s3.wasabisys.com',
+  endpoint: process.env.WASABI_ENDPOINT,
   region: process.env.WASABI_REGION,
   signatureVersion: 'v4',
 });
@@ -113,43 +115,43 @@ async function initiateUpload(request: Request, response: Response) {
   const { UploadId } = await s3.createMultipartUpload(params).promise();
   response.status(200).json({ uploadId: UploadId });
 }
+async function presignedUrl(req, res) {
+  const { partNumber, uploadId, filename } = req.body;
 
-async function presignedUrl(request: Request, response: Response) {
-  const { partNumber, uploadId, filename } = request.query;
-
-  const s3 = new AWS.S3({
-    accessKeyId: process.env.WASABI_ACCESS_KEY,
-    secretAccessKey: process.env.WASABI_SECRET_KEY,
-    endpoint: process.env.WASABI_ENDPOINT,
+  const s3Client = new S3Client({
     region: process.env.WASABI_REGION,
-    signatureVersion: 'v4',
+    endpoint: process.env.WASABI_ENDPOINT,
+    credentials: {
+      accessKeyId: process.env.WASABI_ACCESS_KEY_ID,
+      secretAccessKey: process.env.WASABI_SECRET_ACCESS_KEY,
+    },
   });
 
-  const params = {
-    Bucket: process.env.WASABI_BUCKET_NAME,
+  const command = new UploadPartCommand({
+    Bucket: process.env.WASABI_BUCKET,
     Key: filename,
     PartNumber: Number(partNumber),
     UploadId: uploadId,
-    Expires: 300,
-  };
+  });
 
-  const url = await s3.getSignedUrlPromise('uploadPart', params);
-  response.status(200).json({ url });
+  const signedUrl = await getSignedUrl(s3Client, command);
+
+  res.status(200).json({ url: signedUrl });
 }
 
 async function completeMultiPart(request: Request, response: Response) {
   const { filename, uploadId, parts } = request.body;
 
   const s3 = new AWS.S3({
-    accessKeyId: process.env.WASABI_ACCESS_KEY,
-    secretAccessKey: process.env.WASABI_SECRET_KEY,
+    accessKeyId: process.env.WASABI_ACCESS_KEY_ID,
+    secretAccessKey: process.env.WASABI_SECRET_ACCESS_KEY,
     endpoint: process.env.WASABI_ENDPOINT,
     region: process.env.WASABI_REGION,
     signatureVersion: 'v4',
   });
 
   const params = {
-    Bucket: process.env.WASABI_BUCKET_NAME,
+    Bucket: process.env.WASABI_BUCKET,
     Key: filename,
     UploadId: uploadId,
     MultipartUpload: { Parts: parts },
