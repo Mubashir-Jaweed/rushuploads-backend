@@ -4,15 +4,15 @@
   "environmentVariableList": [
     {
       "cloudFormationParameterName": "awsAccessKeyId",
-      "environmentVariableName": "AWS_ACCESS_KEY_ID"
+      "environmentVariableName": "WASABI_ACCESS_KEY_ID"
     },
     {
       "cloudFormationParameterName": "awsSecretAccessKey",
-      "environmentVariableName": "AWS_SECRET_ACCESS_KEY"
+      "environmentVariableName": "WASABI_SECRET_ACCESS_KEY"
     },
     {
       "cloudFormationParameterName": "awsRegion",
-      "environmentVariableName": "AWS_REGION"
+      "environmentVariableName": "WASABI_REGION"
     },
     {
       "cloudFormationParameterName": "nodeEnv",
@@ -72,7 +72,7 @@
     },
     {
       "cloudFormationParameterName": "awsBucket",
-      "environmentVariableName": "AWS_BUCKET"
+      "environmentVariableName": "WASABI_BUCKET"
     },
     {
       "cloudFormationParameterName": "stripeSecretKey",

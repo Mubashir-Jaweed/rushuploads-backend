@@ -3,6 +3,7 @@ import clamd from 'clamdjs';
 import { TierConstraints } from "../constants/tiers";
 import { env } from "../lib/env";
 import { BadResponse, handleErrors } from "../lib/error";
+import AWS from 'aws-sdk';
 import {
   completeMultipartUpload,
   createFiles,
@@ -24,75 +25,140 @@ import {
   updateFileParamsSchema,
 } from "../validators/file";
 
-const scanner = clamd.createScanner('127.0.0.1', 3310); 
+const scanner = clamd.createScanner('127.0.0.1', 3310);
 
-async function startMultipartUpload(request: Request, response: Response) {
-  try {
-    const { originalName, mimeType } = request.body;
+// async function startMultipartUpload(request: Request, response: Response) {
+//   try {
+//     const { originalName, mimeType } = request.body;
 
-    const { key, uploadId } = await initiateMultipartUpload({
-      originalName,
-      mimeType,
-    });
+//     const { key, uploadId } = await initiateMultipartUpload({
+//       originalName,
+//       mimeType,
+//     });
 
-    return response.success(
-      { data: { key, uploadId } },
-      { message: "Multipart upload initiated successfully!" },
-    );
-  } catch (error) {
-    return handleErrors({ response, error });
-  }
+//     return response.success(
+//       { data: { key, uploadId } },
+//       { message: "Multipart upload initiated successfully!" },
+//     );
+//   } catch (error) {
+//     return handleErrors({ response, error });
+//   }
+// }
+
+// async function uploadChunk(request: Request, response: Response) {
+//   try {
+//     const { key, uploadId, chunkNumber } = request.body;
+
+//     const chunk = request.file.buffer;
+
+//     // const scanResult = await scanner.scanBuffer(chunk);
+//     // if (!clamd.isCleanReply(scanResult)) {
+//     //   return response.badRequest(
+//     //     { data: {} },
+//     //     { message: "File Contain Virus" },
+//     //   );
+//     // }
+
+//     const { eTag } = await uploadFileChunk({
+//       partNumber: chunkNumber,
+//       body: chunk,
+//       uploadMetadata: { key: key, uploadId: uploadId },
+//     });
+
+//     return response.success(
+//       { data: { eTag } },
+//       { message: "Chunk uploaded successfully!" },
+//     );
+//   } catch (error) {
+//     return handleErrors({ response, error });
+//   }
+// }
+
+// async function finalizeMultipartUpload(request: Request, response: Response) {
+//   try {
+//     const { key, uploadId, uploadedParts } = request.body;
+
+//     await completeMultipartUpload({
+//       uploadedParts,
+//       uploadMetadata: { key, uploadId },
+//     });
+
+//     return response.success(
+//       { data: {} },
+//       {
+//         message: "Multipart upload completed successfully!",
+//       },
+//     );
+//   } catch (error) {
+//     return handleErrors({ response, error });
+//   }
+// }
+
+const s3 = new AWS.S3({
+  accessKeyId: process.env.WASABI_ACCESS_KEY_ID,
+  secretAccessKey: process.env.WASABI_SECRET_ACCESS_KEY,
+  endpoint:'https://s3.wasabisys.com',
+  region: process.env.WASABI_REGION,
+  signatureVersion: 'v4',
+});
+
+
+async function initiateUpload(request: Request, response: Response) {
+  const { filename } = request.body;
+  const params = {
+    Bucket: process.env.WASABI_BUCKET,
+    Key: filename,
+  };
+
+  const { UploadId } = await s3.createMultipartUpload(params).promise();
+  response.status(200).json({ uploadId: UploadId });
 }
 
-async function uploadChunk(request: Request, response: Response) {
-  console.log('scanning is ON from now')
-  try {
-    const { key, uploadId, chunkNumber } = request.body;
+async function presignedUrl(request: Request, response: Response) {
+  const { partNumber, uploadId, filename } = request.query;
 
-    const chunk = request.file.buffer;
+  const s3 = new AWS.S3({
+    accessKeyId: process.env.WASABI_ACCESS_KEY,
+    secretAccessKey: process.env.WASABI_SECRET_KEY,
+    endpoint: process.env.WASABI_ENDPOINT,
+    region: process.env.WASABI_REGION,
+    signatureVersion: 'v4',
+  });
 
-    const scanResult = await scanner.scanBuffer(chunk);
-    if (!clamd.isCleanReply(scanResult)) {
-      return response.badRequest(
-        { data: {} },
-        { message: "File Contain Virus" },
-      );
-    }
+  const params = {
+    Bucket: process.env.WASABI_BUCKET_NAME,
+    Key: filename,
+    PartNumber: Number(partNumber),
+    UploadId: uploadId,
+    Expires: 300,
+  };
 
-    const { eTag } = await uploadFileChunk({
-      partNumber: chunkNumber,
-      body: chunk,
-      uploadMetadata: { key: key, uploadId: uploadId },
-    });
-
-    return response.success(
-      { data: { eTag } },
-      { message: "Chunk uploaded successfully!" },
-    );
-  } catch (error) {
-    return handleErrors({ response, error });
-  }
+  const url = await s3.getSignedUrlPromise('uploadPart', params);
+  response.status(200).json({ url });
 }
 
-async function finalizeMultipartUpload(request: Request, response: Response) {
-  try {
-    const { key, uploadId, uploadedParts } = request.body;
+async function completeMultiPart(request: Request, response: Response) {
+  const { filename, uploadId, parts } = request.body;
 
-    await completeMultipartUpload({
-      uploadedParts,
-      uploadMetadata: { key, uploadId },
-    });
+  const s3 = new AWS.S3({
+    accessKeyId: process.env.WASABI_ACCESS_KEY,
+    secretAccessKey: process.env.WASABI_SECRET_KEY,
+    endpoint: process.env.WASABI_ENDPOINT,
+    region: process.env.WASABI_REGION,
+    signatureVersion: 'v4',
+  });
 
-    return response.success(
-      { data: {} },
-      {
-        message: "Multipart upload completed successfully!",
-      },
-    );
-  } catch (error) {
-    return handleErrors({ response, error });
-  }
+  const params = {
+    Bucket: process.env.WASABI_BUCKET_NAME,
+    Key: filename,
+    UploadId: uploadId,
+    MultipartUpload: { Parts: parts },
+  };
+
+  const result = await s3.completeMultipartUpload(params).promise();
+  response.status(200).json(result);
 }
+
 
 async function generateFileLink(request: Request, response: Response) {
   try {
@@ -133,7 +199,7 @@ async function generateFileLink(request: Request, response: Response) {
       ),
     ]);
 
-    
+
     const { link } = await createLink({
       title,
       message,
@@ -143,7 +209,7 @@ async function generateFileLink(request: Request, response: Response) {
 
     const augmentedFiles = link.files.map((file) => ({
       ...file,
-      url: `https://${env.AWS_BUCKET}.s3.${env.AWS_REGION}.wasabisys.com/${file.name}`,
+      url: `https://${env.WASABI_BUCKET}.s3.${env.WASABI_REGION}.wasabisys.com/${file.name}`,
     }));
 
     link.files = augmentedFiles;
@@ -171,7 +237,7 @@ async function sendFileMail(request: Request, response: Response) {
       sendFileMailBodySchema.parse(request.body);
 
 
-      
+
     const rawFiles = [];
 
     const totalFileSize = rawFiles.reduce((acc, file) => acc + file.size, 0);
@@ -228,7 +294,7 @@ async function sendFileMail(request: Request, response: Response) {
 
     const augmentedFiles = mail.files.map((file) => ({
       ...file,
-      url: `https://${env.AWS_BUCKET}.s3.${env.AWS_REGION}.wasabisys.com/${file.name}`,
+      url: `https://${env.WASABI_BUCKET}.s3.${env.WASABI_REGION}.wasabisys.com/${file.name}`,
     }));
 
     sendFiles({
@@ -258,7 +324,7 @@ async function getUserSharedFiles(request: Request, response: Response) {
 
     const augmentedFiles = files.map((file) => ({
       ...file,
-      url: `https://${env.AWS_BUCKET}.s3.${env.AWS_REGION}.wasabisys.com/${file.name}`,
+      url: `https://${env.WASABI_BUCKET}.s3.${env.WASABI_REGION}.wasabisys.com/${file.name}`,
     }));
 
     return response.success(
@@ -280,7 +346,7 @@ async function getUserReceivedFiles(request: Request, response: Response) {
 
     const augmentedFiles = files.map((file) => ({
       ...file,
-      url: `https://${env.AWS_BUCKET}.s3.${env.AWS_REGION}.wasabisys.com/${file.name}`,
+      url: `https://${env.WASABI_BUCKET}.s3.${env.WASABI_REGION}.wasabisys.com/${file.name}`,
     }));
 
     return response.success(
@@ -306,7 +372,7 @@ async function getLink(request: Request, response: Response) {
 
     const augmentedFiles = link.files.map((file) => ({
       ...file,
-      url: `https://${env.AWS_BUCKET}.s3.${env.AWS_REGION}.wasabisys.com/${file.name}`,
+      url: `https://${env.WASABI_BUCKET}.s3.${env.WASABI_REGION}.wasabisys.com/${file.name}`,
     }));
 
     link.files = augmentedFiles;
@@ -368,9 +434,9 @@ async function deleteFile(request: Request, response: Response) {
 }
 
 export {
-  startMultipartUpload,
-  uploadChunk,
-  finalizeMultipartUpload,
+  // startMultipartUpload,
+  // uploadChunk,
+  // finalizeMultipartUpload,
   generateFileLink,
   sendFileMail,
   getUserSharedFiles,
@@ -378,4 +444,5 @@ export {
   getLink,
   downloadFile,
   deleteFile,
+  completeMultiPart, presignedUrl, initiateUpload,
 };

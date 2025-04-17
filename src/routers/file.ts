@@ -1,39 +1,58 @@
 import { Router } from "express";
 
 import {
+  completeMultiPart,
   deleteFile,
   downloadFile,
-  finalizeMultipartUpload,
+  // finalizeMultipartUpload,
   generateFileLink,
   getLink,
   getUserReceivedFiles,
   getUserSharedFiles,
+  initiateUpload,
+  presignedUrl,
   sendFileMail,
-  startMultipartUpload,
-  uploadChunk,
+  // startMultipartUpload,
+  // uploadChunk,
 } from "../controllers/file";
 import { verifyRequest } from "../middlewares/auth";
 import { upload } from "../middlewares/upload";
 
 const fileRouter = Router();
 
-fileRouter.post(
-  "/start",
-  verifyRequest({ isVerified: true }),
-  startMultipartUpload,
-);
+// fileRouter.post(
+//   "/start",
+//   verifyRequest({ isVerified: true }),
+//   startMultipartUpload,
+// );
+
+// fileRouter.post(
+//   "/upload",
+//   verifyRequest({ isVerified: true }),
+//   upload,
+//   uploadChunk,
+// );
+
+// fileRouter.post(
+//   "/finalize",
+//   verifyRequest({ isVerified: true }),
+//   finalizeMultipartUpload,
+// );
 
 fileRouter.post(
-  "/upload",
+  "/initiate",
   verifyRequest({ isVerified: true }),
-  upload,
-  uploadChunk,
+  initiateUpload,
 );
-
 fileRouter.post(
-  "/finalize",
+  "/presigned-url",
   verifyRequest({ isVerified: true }),
-  finalizeMultipartUpload,
+  presignedUrl,
+);
+fileRouter.post(
+  "/complete-multipart",
+  verifyRequest({ isVerified: true }),
+  completeMultiPart,
 );
 
 fileRouter.post("/link", verifyRequest({ isVerified: true }), generateFileLink);

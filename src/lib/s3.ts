@@ -4,12 +4,12 @@ import { env } from "./env";
 
 const s3Client = new S3Client({
   credentials: {
-    accessKeyId: env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
+    accessKeyId: env.WASABI_ACCESS_KEY_ID,
+    secretAccessKey: env.WASABI_SECRET_ACCESS_KEY,
   },
   endpoint: "https://s3.us-west-1.wasabisys.com",
   forcePathStyle: true,
-  region: env.AWS_REGION,
+  region: env.WASABI_REGION,
   disableHostPrefix: true, // Disable host prefix
   useAccelerateEndpoint: false, // Ensure acceleration is off
   useArnRegion: false

@@ -22,7 +22,7 @@ interface ChunkUploadMetadata {
 async function initiateMultipartUpload({ originalName, mimeType }) {
   try {
     const command = new CreateMultipartUploadCommand({
-      Bucket: env.AWS_BUCKET,
+      Bucket: env.WASABI_BUCKET,
       Key: originalName,
       ContentType: mimeType,
       // Explicitly disable checksums
@@ -46,7 +46,7 @@ async function uploadFileChunk(payload: {
   body: Buffer;
 }) {
   const uploadPartCommand = new UploadPartCommand({
-    Bucket: env.AWS_BUCKET,
+    Bucket: env.WASABI_BUCKET,
     Key: payload.uploadMetadata.key,
     UploadId: payload.uploadMetadata.uploadId,
     PartNumber: payload.partNumber,
@@ -69,7 +69,7 @@ async function completeMultipartUpload(payload: {
   const { uploadMetadata, uploadedParts } = payload;
 
   const completeUploadCommand = new CompleteMultipartUploadCommand({
-    Bucket: env.AWS_BUCKET,
+    Bucket: env.WASABI_BUCKET,
     Key: uploadMetadata.key,
     UploadId: uploadMetadata.uploadId,
     MultipartUpload: {
@@ -87,7 +87,7 @@ async function completeMultipartUpload(payload: {
 
 async function removeFile(payload: { key: string }) {
   const deleteCommand = new DeleteObjectCommand({
-    Bucket: env.AWS_BUCKET,
+    Bucket: env.WASABI_BUCKET,
     Key: payload.key,
   });
 

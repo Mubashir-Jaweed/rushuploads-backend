@@ -42,7 +42,7 @@ app.use("/subscriptions", subscriptionRouter);
 app.use("/support", supportRouter);
 
 app.get("/", (req, res) => {
-  res.send("Backend is live!");
+  res.send("Backend is live! YUPPPPPP");
 });
 
 app.get("/test", verifyRequest({ isVerified: true }), (_request, response) => {
@@ -50,7 +50,7 @@ app.get("/test", verifyRequest({ isVerified: true }), (_request, response) => {
 });
 
 app.all("*", (_request, response) => {
-  response.notFound({}, { message: "Not Found?" });
+  response.notFound({}, { message: "Not Found!!!" });
 });
 
 app.use(
