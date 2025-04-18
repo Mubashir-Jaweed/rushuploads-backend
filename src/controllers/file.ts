@@ -115,8 +115,10 @@ async function initiateUpload(request: Request, response: Response) {
   const { UploadId } = await s3.createMultipartUpload(params).promise();
   response.status(200).json({ uploadId: UploadId });
 }
-async function presignedUrl(req, res) {
-  const { partNumber, uploadId, filename } = req.body;
+async function presignedUrl(request: Request, response: Response) {
+  const { partNumber, uploadId, filename } = request.body;
+
+  
 
   const s3Client = new S3Client({
     region: process.env.WASABI_REGION,
@@ -132,11 +134,11 @@ async function presignedUrl(req, res) {
     Key: filename,
     PartNumber: Number(partNumber),
     UploadId: uploadId,
-  });
+  }); 
 
   const signedUrl = await getSignedUrl(s3Client, command);
 
-  res.status(200).json({ url: signedUrl });
+  response.status(200).json({ url: signedUrl });
 }
 
 async function completeMultiPart(request: Request, response: Response) {
