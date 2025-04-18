@@ -42,7 +42,7 @@ app.use("/subscriptions", subscriptionRouter);
 app.use("/support", supportRouter);
 
 app.get("/", (req, res) => {
-  res.send("Backend is live! YUPPPPPP");
+  res.send("Backend is live! Again..../..../..../");
 });
 
 app.get("/test", verifyRequest({ isVerified: true }), (_request, response) => {
