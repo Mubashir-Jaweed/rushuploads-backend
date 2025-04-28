@@ -117,6 +117,7 @@ async function getFilesByUserId(query: {
       isDeleted: true,
       expiredAt: true,
       updatedAt: true,
+      downloadedAt: true,
       user: {
         select: {
           email: true,
