@@ -26,6 +26,7 @@ import {
 } from "../validators/file";
 import { S3Client, UploadPartCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { prisma } from "@/lib/prisma";
 
 const scanner = clamd.createScanner('127.0.0.1', 3310);
 
@@ -393,27 +394,27 @@ async function getLink(request: Request, response: Response) {
   }
 }
 
-async function downloadFile(request: Request, response: Response) {
-  try {
-    const { fileId } = updateFileParamsSchema.parse(request.params);
+// async function downloadFile(request: Request, response: Response) {
+//   try {
+//     const { fileId } = updateFileParamsSchema.parse(request.params);
 
-    const { file } = await updateFileById(
-      { fileId },
-      {
-        downloads: {
-          increment: 1,
-        },
-      },
-    );
+//     const { file } = await updateFileById(
+//       { fileId },
+//       {
+//         downloads: {
+//           increment: 1,
+//         },
+//       },
+//     );
 
-    return response.success(
-      { file },
-      { message: "File Downloaded Successfully!" },
-    );
-  } catch (error) {
-    return handleErrors({ response, error });
-  }
-}
+//     return response.success(
+//       { file },
+//       { message: "File Downloaded Successfully!" },
+//     );
+//   } catch (error) {
+//     return handleErrors({ response, error });
+//   }
+// }
 
 async function deleteFile(request: Request, response: Response) {
   try {
@@ -434,6 +435,57 @@ async function deleteFile(request: Request, response: Response) {
     );
   } catch (error) {
     return handleErrors({ response, error });
+  }
+}
+
+async function downloadFile(request: Request, response: Response) {
+  try {
+    const { fileId } = request.params;
+    const ipAddress = request.ip; 
+    const userAgent = request.headers["user-agent"]; 
+    
+    if (!fileId) {
+      return response.status(400).json({ message: "File ID is required" });
+    }
+
+    const file = await prisma.file.findUnique({
+      where: { id: fileId },
+    });
+
+    if (!file) {
+      return response.status(404).json({ message: "File not found" });
+    }
+
+    const fingerprint = `${ipAddress}-${userAgent}`; 
+    
+    const alreadyDownloaded = file.downloadedBy.includes(fingerprint);
+
+    if (!alreadyDownloaded) {
+      const newDownloadedBy = [...file.downloadedBy, fingerprint];
+      const newDownloadedAt = [...file.downloadedAt, new Date()];
+      
+      await prisma.file.update({
+        where: { id: fileId },
+        data: {
+          downloadedBy: newDownloadedBy,
+          downloadedAt: newDownloadedAt,
+          downloads: { increment: 1 },
+        },
+      });
+    }
+
+    const params = {
+      Bucket: process.env.WASABI_BUCKET,
+      Key: file.name,
+    };
+
+    const signedUrl = await s3.getSignedUrlPromise('getObject', params);
+
+    return response.status(200).json({ url: signedUrl });
+
+  } catch (error) {
+    console.error("Error downloading file:", error);
+    return response.status(500).json({ message: "Server error" });
   }
 }
 
