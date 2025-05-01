@@ -167,17 +167,15 @@ async function completeMultiPart(request: Request, response: Response) {
 
 async function generateFileLink(request: Request, response: Response) {
   try {
-    const { title, message, expiresInDays, files } =
+    const { title, message, expiresInDays, files } = 
       generateFileLinkBodySchema.parse(request.body);
 
-
-    const rawFiles = [];
-
-    const totalFileSize = rawFiles.reduce((acc, file) => acc + file.size, 0);
-
+    // Calculate total size (already validated by Zod)
+    const totalFileSize = files.reduce((acc, file) => acc + file.size, 0);
     const userTier = request.user.tier;
     const expiresInMs = expiresInDays * 24 * 60 * 60 * 1000;
 
+    // Validate storage limits
     validateFileConstraints({
       userTier,
       totalFileSize,
@@ -187,45 +185,46 @@ async function generateFileLink(request: Request, response: Response) {
 
     const expiresAt = new Date(Date.now() + expiresInMs);
 
-    const [p2, _p3] = await Promise.all([
+    // Process files for DB (map to expected structure)
+    const dbFiles = files.map(file => ({
+      name: file.name,
+      originalName: file.originalName,
+      type: file.type,
+      size: file.size,
+      // Add other required DB fields if needed
+    }));
+
+    // Transactional operation
+    const [createdFiles, _] = await Promise.all([
       createFiles({
         userId: request.user.id,
         expiresAt,
-        // @ts-ignore
-        files,
+        files: dbFiles,
         sharedToUserIds: [],
       }),
-
       updateUserById(
         { id: request.user.id },
-        {
-          usedStorage: request.user.usedStorage + totalFileSize,
-        },
+        { usedStorage: request.user.usedStorage + totalFileSize },
       ),
     ]);
 
-
+    // Generate shareable link
     const { link } = await createLink({
-      title,
+      title: title || "Shared Files", // Default title
       message,
-      fileIds: p2.files.map((file) => file.id),
+      fileIds: createdFiles.files.map(file => file.id),
       userId: request.user.id,
     });
 
-    const augmentedFiles = link.files.map((file) => ({
+    // Add S3 URLs
+    link.files = link.files.map(file => ({
       ...file,
       url: `https://${env.WASABI_BUCKET}.s3.${env.WASABI_REGION}.wasabisys.com/${file.name}`,
     }));
 
-    link.files = augmentedFiles;
-
-
-
     return response.created(
-      {
-        data: { link },
-      },
-      { message: "Link Created Successfully!" },
+      { data: { link } },
+      { message: "Link created successfully!" },
     );
   } catch (error) {
     return handleErrors({ response, error });
@@ -234,19 +233,17 @@ async function generateFileLink(request: Request, response: Response) {
 
 async function sendFileMail(request: Request, response: Response) {
   try {
-    request.body.to = request.body.to
-      .split(",")
-      .map((email: string) => email.trim());
+    // Parse input (Zod handles email validation)
+    const { to, title, message, expiresInDays, files } = 
+      sendFileMailBodySchema.parse({
+        ...request.body,
+        to: typeof request.body.to === 'string' 
+          ? request.body.to.split(',') 
+          : request.body.to,
+      });
 
-    const { to, title, message, expiresInDays, files } =
-      sendFileMailBodySchema.parse(request.body);
-
-
-
-    const rawFiles = [];
-
-    const totalFileSize = rawFiles.reduce((acc, file) => acc + file.size, 0);
-
+    // Calculate total size
+    const totalFileSize = files.reduce((acc, file) => acc + file.size, 0);
     const userTier = request.user.tier;
     const expiresInMs = expiresInDays * 24 * 60 * 60 * 1000;
 
@@ -259,64 +256,68 @@ async function sendFileMail(request: Request, response: Response) {
 
     const expiresAt = new Date(Date.now() + expiresInMs);
 
+    // Upsert recipients
     const users = await Promise.all(
-      to.map((email) =>
+      to.map(email => 
         upsertUserByEmail(
           { email },
-          {
+          { 
             totalStorage: TierConstraints.FREE.maxStorage,
-            usedStorage: 0,
-          },
-          {},
-        ),
-      ),
+            usedStorage: 0 
+          }
+        )
+      )
     );
 
-    const [p2, _p3] = await Promise.all([
+    // Prepare files for DB
+    const dbFiles = files.map(file => ({
+      name: file.name,
+      originalName: file.originalName,
+      type: file.type,
+      size: file.size,
+    }));
+
+    // Transactional operation
+    const [createdFiles, _] = await Promise.all([
       createFiles({
         userId: request.user.id,
         expiresAt,
-        // @ts-ignore
-        files: files,
-        sharedToUserIds: users.map(({ user }) => user.id),
+        files: dbFiles,
+        sharedToUserIds: users.map(u => u.user.id),
       }),
-
       updateUserById(
         { id: request.user.id },
-        {
-          usedStorage: request.user.usedStorage + totalFileSize,
-        },
+        { usedStorage: request.user.usedStorage + totalFileSize },
       ),
     ]);
 
+    // Create mail record
     const { mail } = await createMail({
       to,
-      title,
+      title: title || "Files shared with you", // Default title
       message,
-      fileIds: p2.files.map((file) => file.id),
+      fileIds: createdFiles.files.map(file => file.id),
       userId: request.user.id,
     });
 
-    const augmentedFiles = mail.files.map((file) => ({
+    // Add S3 URLs
+    mail.files = mail.files.map(file => ({
       ...file,
       url: `https://${env.WASABI_BUCKET}.s3.${env.WASABI_REGION}.wasabisys.com/${file.name}`,
     }));
 
+    // Send email (fire-and-forget)
     sendFiles({
       senderEmail: request.user.email,
-      recipientEmail: mail.to.join(", "),
-      title: mail.title || "File Shared",
+      recipientEmail: to.join(", "),
+      title: mail.title,
       message: mail.message,
       link: `${env.CLIENT_BASE_URL}/preview/${mail.id}`,
     });
 
-    mail.files = augmentedFiles;
-
     return response.created(
-      {
-        data: { mail },
-      },
-      { message: "Mail Sent Successfully!" },
+      { data: { mail } },
+      { message: "Mail sent successfully!" },
     );
   } catch (error) {
     return handleErrors({ response, error });

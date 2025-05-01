@@ -90,6 +90,7 @@ async function getUsers(
       totalStorage: true,
       usedStorage: true,
       isVerified: true,
+      files: true,
       updatedAt: true,
     },
     skip: query.skip,

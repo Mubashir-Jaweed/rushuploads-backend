@@ -81,7 +81,7 @@ async function getKPIs(_request: Request, response: Response) {
 
 async function getAllUsers(_request: Request, response: Response) {
   try {
-    const { users } = await getUsers({ role: "USER" });
+    const { users } = await getUsers();
 
     return response.success(
       {
