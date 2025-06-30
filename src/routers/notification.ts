@@ -12,7 +12,7 @@ notificatioRouter.get(
 )
 notificatioRouter.post(
     '/one',
-    verifyRequest({isVerified:true, role:'ADMIN'}),
+    verifyRequest({isVerified:true}),
     addNotification
 )
 

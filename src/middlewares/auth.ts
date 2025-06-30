@@ -24,13 +24,13 @@ function verifyRequest({ role, isVerified }: Readonly<VerifyRequestParams>) {
       const bearerToken = request.headers.authorization;
 
       if (!bearerToken) {
-        throw new UnauthorizedResponse("Unauthorized!");
+        throw new UnauthorizedResponse("Unauthorized! bt");
       }
 
       const token = bearerToken.split(" ")[1];
 
       if (!token) {
-        throw new UnauthorizedResponse("Unauthorized!");
+        throw new UnauthorizedResponse("Unauthorized! t");
       }
 
       const decodedUser = (await verifyToken(token)) as User;
