@@ -14,6 +14,7 @@ import { subscriptionRouter } from "./routers/subscription";
 import { supportRouter } from "./routers/support";
 import { userRouter } from "./routers/user";
 import { adsRouter } from "./routers/ads";
+import { notificatioRouter } from "./routers/notification";
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use(
     maxAge: 7 * 86400, // 7 * 24 hrs
   }),
 );
+
 app.use(morgan("dev"));
 app.use(express.json({ limit: Number.POSITIVE_INFINITY }));
 app.use(
@@ -40,6 +42,7 @@ app.use("/profiles", profileRouter);
 app.use("/files", fileRouter);
 app.use("/subscriptions", subscriptionRouter);
 app.use("/support", supportRouter);
+app.use("/notification", notificatioRouter);
 
 app.get("/", (req, res) => {
   res.send("Backend is live! Again..../..../..../");

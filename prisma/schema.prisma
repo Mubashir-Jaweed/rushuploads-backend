@@ -172,3 +172,11 @@ model AdClick {
   settingId String   @db.ObjectId
   createdAt DateTime @default(now())
 }
+
+model Notification {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  email       String
+  description String
+  dateTime    DateTime
+  createdAt   DateTime @default(now())
+}
