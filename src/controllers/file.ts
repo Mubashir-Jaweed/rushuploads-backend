@@ -445,9 +445,9 @@ async function downloadFile(request: Request, response: Response) {
     const ipAddress = request.ip; 
     const userAgent = request.headers["user-agent"]; 
     const date = new Date()
-    const day = date.getDate
-    const month = date.getMonth
-    const year = date.getFullYear
+    const day = date.getDate()
+    const month = date.getMonth()
+    const year = date.getFullYear()
     
     if (!fileId) {
       return response.status(400).json({ message: "File ID is required" });
