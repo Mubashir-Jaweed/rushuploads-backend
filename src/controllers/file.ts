@@ -444,6 +444,10 @@ async function downloadFile(request: Request, response: Response) {
     const { fileId } = request.params;
     const ipAddress = request.ip; 
     const userAgent = request.headers["user-agent"]; 
+    const date = new Date()
+    const day = date.getDate
+    const month = date.getMonth
+    const year = date.getFullYear
     
     if (!fileId) {
       return response.status(400).json({ message: "File ID is required" });
@@ -457,7 +461,7 @@ async function downloadFile(request: Request, response: Response) {
       return response.status(404).json({ message: "File not found" });
     }
 
-    const fingerprint = `${ipAddress}-${userAgent}`; 
+    const fingerprint = `${ipAddress}-${userAgent}-${day}-${month}-${year}`; 
     
     const alreadyDownloaded = file.downloadedBy.includes(fingerprint);
 
